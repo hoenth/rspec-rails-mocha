@@ -1,15 +1,14 @@
-require 'active_support/core_ext'
+require 'active_support'
+require 'active_support/core_ext/object/to_param'
 require 'active_model'
-require 'rspec/core'
 
-module RSpec
+module Mocha
   module Rails
-
     unless defined? IllegalDataAccessException
       class IllegalDataAccessException < StandardError; end
     end
 
-    module Mocha
+    module Rspec
 
       module ActiveModelInstanceMethods
         def as_new_record
@@ -120,6 +119,9 @@ EOM
             def to_s
               "#{model_class.name}_#{to_param}"
             end
+            def _read_attribute(attribute)
+              self.send(attribute)
+            end
           CODE
           yield m if block_given?
         end
@@ -219,7 +221,7 @@ EOM
   end
 end
 
-RSpec.configure do |config|
-  config.mock_with :mocha
-  config.include RSpec::Rails::Mocha
-end
+# RSpec.configure do |config|
+#   config.mock_with :mocha
+#   config.include RSpec::Rails::Mocha
+# end
